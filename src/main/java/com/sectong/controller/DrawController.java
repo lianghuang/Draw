@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @Controller
-@Api(description = "绘图转发")
+@Api(description = "你画我猜相关")
 public class DrawController {
     private static final Logger logger = LoggerFactory.getLogger(DrawController.class);
-    @MessageMapping("/draw/sync")
-    @SendTo("/topic/draw")
-    public DrawEntity drawpush(DrawEntity message) throws Exception {
-           logger.info("message:{}",message);
-           return message;
+
+
+    @MessageMapping("/draw/paint")
+    @SendTo("/topic/draw/pts")
+    public String drawpts(String message) throws Exception {
+        logger.info("message:{}",message);
+        return message;
     }
+
 }
