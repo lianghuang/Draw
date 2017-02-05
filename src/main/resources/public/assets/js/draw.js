@@ -39,15 +39,15 @@ $(function () {
 
     Ctl.init();
 
-    input.onkeydown = function (e) {
-        if (e.keyCode === 13 && this.value != '') {
-            if (canvas.isMe) {
-                alert('绘图者不能够发送消息！');
-                return;
-            }
-            this.value = '';
-        }
-    }
+    // input.onkeydown = function (e) {
+    //     if (e.keyCode === 13 && this.value != '') {
+    //         if (canvas.isMe) {
+    //             alert('绘图者不能够发送消息！');
+    //             return;
+    //         }
+    //         this.value = '';
+    //     }
+    // }
     document.querySelector('#btns').addEventListener('click', function (e) {
         if (e.target.classList.contains('btn-active-able')) {
             if (this.prevBtn) {

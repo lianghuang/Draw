@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests()
-					.antMatchers("/api/create", "/", "/assets/**", "/plugins/**", "/static/**", "/bootstrap/**",
+					.antMatchers("/testsocket","/socket/**","/draw/**","/api/create", "/", "/assets/**", "/plugins/**", "/static/**", "/bootstrap/**",
 							"/v2/api-docs/**", "/swagger-ui.html**", "/webjars/**", "/swagger-resources/**", "/api/**") // 免认证目录
 					.permitAll().antMatchers("/admin/**").hasRole("ADMIN")// ADMIN角色可以访问/admin目录
 					.anyRequest().authenticated().and().formLogin().loginPage("/login")// 自定义登录页为/login
