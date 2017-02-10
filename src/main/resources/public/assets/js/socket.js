@@ -16,9 +16,10 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('http://localhost:8080/socket');
+    var socket = new SockJS('http://127.0.0.1:8080/ws');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
+    var myDate = new Date();
+    stompClient.connect({token:"token","user-name":myDate.toLocaleTimeString()}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
         // stompClient.subscribe('/topic/draw/paths', function (paths) {
@@ -37,16 +38,14 @@ function connect() {
             if(!pts) return;
             Ctl.drawPts(ctx, pts);
         });
-        // stompClient.subscribe('/topic/message', function (message) {
-        //     var ele = document.createElement('p');
-        //     ele.innerHTML = message;
-        //     msg.appendChild(ele);
-        //     msg.scrollTop = msg.scrollHeight;
-        // });
-        // stompClient.subscribe('/topic/erase', function (message) {
-        //     message = JSON.parse(message);
-        //     new Rect(message.x,message.y,message.w,message.h).clearOn(ctx);
-        // });
+        stompClient.subscribe('/topic/user.login', function (login) {
+            var loginEvent=JSON.parse(login.body);
+            alert(loginEvent.username+"加入进来了");
+        });
+        stompClient.subscribe('/topic/user.logout', function (logout) {
+            var logoutEvent=JSON.parse(logout.body);
+            alert(logoutEvent.username+"离开了");
+        });
 
     });
 }

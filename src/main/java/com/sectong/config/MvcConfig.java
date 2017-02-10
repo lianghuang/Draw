@@ -1,4 +1,4 @@
-package com.sectong.controller;
+package com.sectong.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -16,7 +16,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		
 		registry.addViewController("/hello").setViewName("hello");
 
-		registry.addViewController("/testsocket").setViewName("/draw/game_draw");
+		registry.addViewController("/testsocket").setViewName("draw/game_draw");
 	}
 
 }

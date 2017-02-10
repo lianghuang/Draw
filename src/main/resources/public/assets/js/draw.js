@@ -96,7 +96,7 @@ $(function () {
             var w = 20, h = 20;
             var rect = new Rect(x - (w >>> 1), y - (h >>> 1), w, h);
             rect.clearOn(ctx);
-            stompClient.send("/draw/erase", {}, rect.x, rect.y, rect.w, rect.h);
+            stompClient.send("/app/draw/erase", {}, rect.x, rect.y, rect.w, rect.h);
             // socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
             return;
         }
