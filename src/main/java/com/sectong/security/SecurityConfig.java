@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
+import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -56,17 +58,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 *
 	 */
 	@Configuration
-	@Order(2)
+	@Order(3)
 	public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests()
-					.antMatchers("/testsocket","/ws/**","/draw/**","/api/create", "/", "/assets/**", "/plugins/**", "/static/**", "/bootstrap/**",
+					.antMatchers("/app/**","/testsocket","/ws/**","/draw/**","/api/create", "/", "/assets/**", "/plugins/**", "/static/**", "/bootstrap/**",
 							"/v2/api-docs/**", "/swagger-ui.html**", "/webjars/**", "/swagger-resources/**", "/api/**") // 免认证目录
 					.permitAll().antMatchers("/admin/**").hasRole("ADMIN")// ADMIN角色可以访问/admin目录
 					.anyRequest().authenticated().and().formLogin().loginPage("/login")// 自定义登录页为/login
 					.permitAll().and().logout().permitAll().and().csrf().disable();
+//			http.authorizeRequests()
+//					.antMatchers("/*/**") // 免认证目录
+//					.permitAll().antMatchers("/admin/**").hasRole("ADMIN")// ADMIN角色可以访问/admin目录
+//					.anyRequest().authenticated().and().formLogin().loginPage("/login")// 自定义登录页为/login
+//					.permitAll().and().logout().permitAll().and().csrf().disable();
+
 		}
+	}
+	@Configuration
+	@Order(2)
+	public class WebSocketSecurityConfig
+			extends AbstractSecurityWebSocketMessageBrokerConfigurer {
+	    @Override
+		protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
+			messages.simpDestMatchers("/app/**","/ws/**","/draw/**").permitAll()
+                    .simpSubscribeDestMatchers("/topic/**").permitAll();
+		}
+        @Override
+        protected boolean sameOriginDisabled() {
+            return true;
+        }
 	}
 }

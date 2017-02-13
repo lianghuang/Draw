@@ -1,5 +1,6 @@
 package com.sectong.event;
 
+import com.sectong.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -29,6 +30,7 @@ public class PresenceEventListener {
 
     @EventListener
     private void handleSessionConnected(SessionConnectEvent event) {
+        logger.info("event:{}", JsonUtils.toString(event));
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
         logger.info("===============headers:{}",headers.toString());
         String username = headers.getNativeHeader("user-name").get(0);

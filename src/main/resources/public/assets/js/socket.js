@@ -16,7 +16,7 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('http://127.0.0.1:8080/ws');
+    var socket = new SockJS('http://112.74.174.121:8080/ws');
     stompClient = Stomp.over(socket);
     var myDate = new Date();
     stompClient.connect({token:"token","user-name":myDate.toLocaleTimeString()}, function (frame) {

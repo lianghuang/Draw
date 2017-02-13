@@ -67,12 +67,12 @@ $(function () {
                 if (!this.erase) {
                     Ctl.addPos(x, y);
                     Ctl.drawPts(ctx, this.pts);
-                    stompClient.send("/draw/paint", {}, JSON.stringify(new Path(this.pts)));
+                    stompClient.send("/app/draw/paint", {}, JSON.stringify(new Path(this.pts)));
                     // socket.emit('paint',JSON.stringify({data:new Path(this.pts),status:'ing'}))
                 } else {
                     var rect = new Rect(x - (w >>> 1), y - (h >>> 1), w, h);
                     rect.clearOn(ctx);
-                    stompClient.send("/draw/erase", {}, rect.x, rect.y, rect.w, rect.h);
+                    stompClient.send("/app/draw/erase", {}, rect.x, rect.y, rect.w, rect.h);
                     // socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
                 }
             }
@@ -84,7 +84,7 @@ $(function () {
         var x = e.offsetX, y = e.offsetY;
         Ctl.addPos(x, y);
         Ctl.addPath(this.pts);
-        stompClient.send("/draw/paint", {}, JSON.stringify({data: new Path(this.pts), status: 'end'}));
+        stompClient.send("/app/draw/paint", {}, JSON.stringify({data: new Path(this.pts), status: 'end'}));
         // socket.emit('paint',JSON.stringify({data:new Path(this.pts),status:'end'}));
         Ctl.clearPos();
 
@@ -96,7 +96,7 @@ $(function () {
             var w = 20, h = 20;
             var rect = new Rect(x - (w >>> 1), y - (h >>> 1), w, h);
             rect.clearOn(ctx);
-            stompClient.send("/app/draw/erase", {}, rect.x, rect.y, rect.w, rect.h);
+            stompClient.send("/app/app/draw/erase", {}, rect.x, rect.y, rect.w, rect.h);
             // socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
             return;
         }
