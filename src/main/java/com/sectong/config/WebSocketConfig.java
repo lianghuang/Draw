@@ -3,6 +3,7 @@ package com.sectong.config;
 /**
  * Created by huangliangliang on 2/3/17.
  */
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.session.ExpiringSession;
@@ -17,14 +18,17 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
 
     @Override
     protected void configureStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS().setInterceptors(httpSessionIdHandshakeInterceptor());;
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/queue/", "/topic/", "/exchange/");
-        //registry.enableStompBrokerRelay("/queue/", "/topic/", "/exchange/");
         registry.setApplicationDestinationPrefixes("/app");
     }
 
+    @Bean
+    public HttpSessionIdHandshakeInterceptor httpSessionIdHandshakeInterceptor() {
+        return new HttpSessionIdHandshakeInterceptor();
+    }
 }

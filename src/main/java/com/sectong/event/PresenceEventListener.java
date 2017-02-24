@@ -1,5 +1,6 @@
 package com.sectong.event;
 
+import com.sectong.constants.WebConstant;
 import com.sectong.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,8 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+
+import java.util.Map;
 
 /**
  * Created by huangliangliang on 2/10/17.
@@ -33,13 +36,16 @@ public class PresenceEventListener {
         logger.info("event:{}", JsonUtils.toString(event));
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
         logger.info("===============headers:{}",headers.toString());
-        String username = headers.getNativeHeader("user-name").get(0);
-        logger.info("===============username:{}",username);
-        LoginEvent loginEvent = new LoginEvent(username);
-        messagingTemplate.convertAndSend(loginDestination, loginEvent);
-
-        // We store the session as we need to be idempotent in the disconnect event processing
-        participantRepository.add(headers.getSessionId(), loginEvent);
+        if(headers.getHeader(SimpMessageHeaderAccessor.SESSION_ATTRIBUTES)!=null){
+            @SuppressWarnings("unchecked")
+            Map<String, Object> simpSessionAttributes= (Map<String, Object>)headers.getHeader(SimpMessageHeaderAccessor.SESSION_ATTRIBUTES);
+            String username=(String) simpSessionAttributes.get(WebConstant.USERNAME);
+            logger.info("===============username:{}",username);
+            LoginEvent loginEvent = new LoginEvent(username);
+            messagingTemplate.convertAndSend(loginDestination, loginEvent);
+            // We store the session as we need to be idempotent in the disconnect event processing
+            participantRepository.add(headers.getSessionId(), loginEvent);
+        }
     }
 
     @EventListener

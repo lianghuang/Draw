@@ -1,4 +1,4 @@
-package com.sectong;
+package com.sectong.config;
 
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;

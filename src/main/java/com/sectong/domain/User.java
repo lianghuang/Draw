@@ -63,4 +63,18 @@ public class User {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", enabled=" + enabled + "]";
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		User user = (User) o;
+
+		return id.equals(user.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
 }
