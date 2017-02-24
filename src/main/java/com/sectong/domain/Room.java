@@ -27,8 +27,10 @@ public class Room {
     @Id
     private String roomId;
 
+    @Enumerated(EnumType.STRING)
     private RoomType type=RoomType.Random;
 
+    @Enumerated(EnumType.STRING)
     private Stage stage=Stage.Ready; //房间的阶段
 
     private String roomOwnerName;//房主名字
@@ -144,7 +146,7 @@ public class Room {
         }
         if(addedUserList.size()<maxUserNum){
             addedUserList.add(user);
-            nowUserNum++;
+            nowUserNum=addedUserList.size();
 
         }
     }
@@ -155,7 +157,7 @@ public class Room {
         }
         if(addedUserList.contains(user)){
             addedUserList.remove(user);
-            nowUserNum--;
+            nowUserNum=addedUserList.size();
         }
         if(roomOwnerName.equals(user.getUsername())){
             if(!CollectionUtils.isEmpty(addedUserList)){

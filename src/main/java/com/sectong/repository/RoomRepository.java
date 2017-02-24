@@ -2,10 +2,12 @@ package com.sectong.repository;
 
 import com.sectong.domain.Room;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -20,6 +22,8 @@ public interface RoomRepository extends CrudRepository<Room, String> {
     @Query(value = "select room.room_id from Rooms room left join ref_room_user ref on room.room_id=ref.room_id left join users u on u.id=ref.user_id where u.username=?1", nativeQuery = true)
     String findRoomIdByUserName(String userName);
 
-    @Query(value = "delete  from ref_room_user ref where ref.room_id=?1 and ref.user_id=?2", nativeQuery = true)
+    @Transactional
+    @Modifying
+    @Query(value = "delete from ref_room_user where room_id=?1 and user_id=?2", nativeQuery = true)
     int removeRoomAndUserConnection(String roomId,Long userId);
 }

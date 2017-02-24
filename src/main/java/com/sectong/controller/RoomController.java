@@ -93,6 +93,9 @@ public class RoomController {
             return Message.errorMsg("未找到"+roomId+"的房间");
         }
         Question quesiton=questionService.getQuestionById(questionId);
+        room.setCurrentQuestion(quesiton);
+        room.getQuestions().add(quesiton);
+        roomService.save(room);
         simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/question/ok",quesiton);
         return Message.successMsg(quesiton);
     }

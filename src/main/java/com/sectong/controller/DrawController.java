@@ -58,6 +58,8 @@ public class DrawController {
         if(room.getCurrentQuestion().getQuestion().equals(answer)){
             //回答正确
             simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/correct",answer);
+            //下一个人
+
         }else{
             //回答错误
             simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/incorrect",answer);

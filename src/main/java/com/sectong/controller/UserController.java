@@ -116,11 +116,11 @@ public class UserController {
 	public ResponseEntity<Message> handleUserCreateForm(@Valid @RequestBody UserCreateForm form,
 			BindingResult bindingResult) {
 
-		if (sendSMSService.findByUsernameAndVcode(form.getUsername(), form.getVcode()) == null) {
-			LOGGER.info("验证码错误，或找不到");
-			message.setMsg(0, "验证码错误或过期");
-			return new ResponseEntity<Message>(message, HttpStatus.OK);
-		}
+//		if (sendSMSService.findByUsernameAndVcode(form.getUsername(), form.getVcode()) == null) {
+//			LOGGER.info("验证码错误，或找不到");
+//			message.setMsg(0, "验证码错误或过期");
+//			return new ResponseEntity<Message>(message, HttpStatus.OK);
+//		}
 
 		LOGGER.debug("Processing user create form={}, bindingResult={}", form, bindingResult);
 		if (bindingResult.hasErrors()) {

@@ -28,6 +28,11 @@ public class RoomService {
     private static final Logger logger = LoggerFactory.getLogger(RoomService.class);
 
 
+    public void save(Room room){
+        roomRepository.save(room);
+    }
+
+
     public Room removeUser(User user,Room room){
         room.removeUser(user);
         if(room.getNowUserNum()<=0){
@@ -62,11 +67,12 @@ public class RoomService {
         String roomId=findRoomIdByUser(user.getUsername());
         if(StringUtils.isNotEmpty(roomId)){
             //退出用户之前的房间，加入新的房间
-           roomRepository.removeRoomAndUserConnection(roomId,user.getId());
+//           roomRepository.removeRoomAndUserConnection(roomId,user.getId());
+            removeUser(user,findRoomById(roomId));
         }
         Pageable page=new PageRequest(0,1);
         Room room= roomRepository.findMostSuitRoom(Room.maxUserNum);
-        if(room!=null){
+        if(room==null){
             Room room1 =generateEmptyRoom();
             room1.addUser(user);
             roomRepository.save(room1);

@@ -16,7 +16,7 @@ public class UserCreateForm {
 	@NotEmpty
 	private String password;
 
-	@NotEmpty
+//	@NotEmpty
 	private String vcode;
 
 	public String getUsername() {
