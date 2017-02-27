@@ -1,11 +1,6 @@
 package com.sectong.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 /**
  * 用户User POJO定义
@@ -22,11 +17,38 @@ public class User {
 	private Long id;
 
 	private String username;
+
+	private String nickname;
+
 	private String password;
 	private String image;
+
+    @Enumerated(EnumType.STRING)
+	private UserStatus status=UserStatus.Empty;
+
+    public enum UserStatus{
+        Empty,Ready,Gaming
+    }
+
 	private int enabled;
 
-	public Long getId() {
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public Long getId() {
 		return id;
 	}
 

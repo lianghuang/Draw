@@ -95,7 +95,12 @@ public class UserServiceImpl implements UserService {
 		return userRepository.save(user);
 	}
 
-	/**
+    @Override
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+    /**
 	 * 用户上传头像
 	 */
 

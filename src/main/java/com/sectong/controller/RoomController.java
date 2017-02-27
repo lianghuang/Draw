@@ -45,6 +45,9 @@ public class RoomController {
     @ApiOperation(value = "", notes = "用户进入房间")
     public Message getRandomRoom(@RequestParam(name = "username") String username) {
         User user=userService.getUserByUsername(username);
+        if(user==null){
+            return Message.errorMsg("未找到该用户");
+        }
         Room room= roomService.getRandomRoom(user);
         //房间内的其他玩家收到该用户进入房间的推送消息
         simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/in", user);
@@ -60,7 +63,7 @@ public class RoomController {
     }
 
     @GetMapping(value = "room/into/{roomId}")
-    @ApiOperation(value = "", notes = "创建私有房间")
+    @ApiOperation(value = "", notes = "进入私有房间")
     public Message intoRoom(@RequestParam(name = "username") String username, @PathVariable(name="roomId") String roomId) {
         User user=userService.getUserByUsername(username);
         Room room= roomService.intoRoom(user,roomId);
@@ -114,43 +117,61 @@ public class RoomController {
         simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/out", user);
         return Message.successMsg(true);
     }
-
-    @MessageMapping("/room.{roomId}/ready")
-    public void userReady(@DestinationVariable("roomId")String roomId,String username) throws Exception {
+    @GetMapping(value = "room/{roomId}/ready")
+    @ApiOperation(value = "", notes = "用户在房间内点击准备")
+    public Message userReady(@PathVariable("roomId")String roomId,@RequestParam(name = "username") String username) throws Exception {
         logger.info("userReady:username:{},roomId:{}",username,roomId);
-        if(!validateRoomAndUserName(roomId,username))return;
+        if(!validateRoomAndUserName(roomId,username)){
+            return Message.errorMsg("房间和您当前用户校验错误");
+        }
+        //存储用户状态
+        User user=userService.getUserByUsername(username);
+        user.setStatus(User.UserStatus.Ready);
+        userService.saveUser(user);
         Room room= roomService.findRoomById(roomId);
-        simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/ready", username);
+        simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/ready", user);
         if(room.getNowUserNum()>=Room.maxUserNum){
             //通知房间内倒计时
             simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/owner.countdown", room.getRoomOwnerName());
         }
+        return Message.successMsg(room);
     }
 
-    @MessageMapping("/room.{roomId}/readycancel")
-    public void userReadyCancel(@DestinationVariable("roomId")String roomId,String username) throws Exception {
+    @GetMapping(value = "room/{roomId}/readycancel")
+    @ApiOperation(value = "", notes = "用户在房间内点击取消准备")
+    public Message userReadyCancel(@PathVariable("roomId")String roomId,@RequestParam(name = "username") String username) throws Exception {
         logger.info("userReadyCancel:username:{},roomId:{}",username,roomId);
-        if(!validateRoomAndUserName(roomId,username))return;
+        if(!validateRoomAndUserName(roomId,username)){
+            return Message.errorMsg("房间和您当前用户校验错误");
+        }
+        //存储用户状态
+        User user=userService.getUserByUsername(username);
+        user.setStatus(User.UserStatus.Empty);
+        userService.saveUser(user);
         Room room= roomService.findRoomById(roomId);
-        simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/readycancel", username);
+        simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/readycancel", user);
         if(room.getNowUserNum()<Room.maxUserNum){
             //通知房间内倒计时取消
             simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/owner.countdown.cancel", room.getRoomOwnerName());
         }
-
+        return Message.successMsg(room);
     }
 
-    @MessageMapping("/room.{roomId}/start")
-    public void gameStart(@DestinationVariable("roomId")String roomId,String ownerName) throws Exception{
-        logger.info("gameStart:ownerName:{},roomId:{}",ownerName,roomId);
-        if(!validateRoomAndUserName(roomId,ownerName))return;
+    @GetMapping(value = "room/{roomId}/start")
+    @ApiOperation(value = "", notes = "房主用户在房间内点击游戏开始")
+    public Message gameStart(@PathVariable("roomId")String roomId,@RequestParam(name = "username") String username) throws Exception{
+        logger.info("gameStart:ownerName:{},roomId:{}",username,roomId);
+        if(!validateRoomAndUserName(roomId,username)){
+            return Message.errorMsg("房间和您当前用户校验错误");
+        }
         Room room=roomService.roomBeginGame(roomId);
         simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/start.game ",room);
+        return Message.successMsg(room);
     }
 
     @MessageMapping("/room.{roomId}/talk")
     public void gameTalk(@DestinationVariable("roomId")String roomId,String message) throws Exception{
-        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/game.talk ",message);
+        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/game.talk",message);
     }
 
     public void gameEnded(String roomId){

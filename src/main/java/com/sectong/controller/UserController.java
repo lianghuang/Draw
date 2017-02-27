@@ -18,14 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sectong.domain.ResetPasswordForm;
@@ -113,7 +106,7 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "create", method = RequestMethod.POST)
 	@ApiOperation(value = "创建用户接口", notes = "创建用户，接口POST请求，提交用户创建json")
-	public ResponseEntity<Message> handleUserCreateForm(@Valid @RequestBody UserCreateForm form,
+	public ResponseEntity<Message> handleUserCreateForm(@ModelAttribute @Valid UserCreateForm form,
 			BindingResult bindingResult) {
 
 //		if (sendSMSService.findByUsernameAndVcode(form.getUsername(), form.getVcode()) == null) {

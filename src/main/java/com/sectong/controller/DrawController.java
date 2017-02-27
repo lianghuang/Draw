@@ -35,7 +35,7 @@ public class DrawController {
 
     @MessageMapping("/room.{roomId}/draw/paint")
     public String drawpts(@DestinationVariable("roomId")String roomId,String message) throws Exception {
-        logger.info("message:{}",message);
+        logger.debug("message:{}",message);
         paintHistoryRepository.addHistory(roomId,message);
         //消息转发
         simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/draw/pts",message);
@@ -43,11 +43,12 @@ public class DrawController {
     }
 
 
-    @MessageMapping("/room.{roomId}/draw/paint/history")
-    public List<String> drawHistory(@DestinationVariable("roomId")String roomId) throws Exception {
+    @MessageMapping("/room.{roomId}/{username}/draw/paint/history")
+    public List<String> drawHistory(@DestinationVariable("roomId")String roomId,
+                                    @DestinationVariable("userId")String username) throws Exception {
         List<String> historys=paintHistoryRepository.getHistory(roomId);
         //消息转发
-        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/draw/paint/history",historys);
+        simpMessagingTemplate.convertAndSend("/queue/room."+roomId+"/"+username+"/draw/paint/history",historys);
         return historys;
     }
 
@@ -58,8 +59,6 @@ public class DrawController {
         if(room.getCurrentQuestion().getQuestion().equals(answer)){
             //回答正确
             simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/correct",answer);
-            //下一个人
-
         }else{
             //回答错误
             simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/incorrect",answer);

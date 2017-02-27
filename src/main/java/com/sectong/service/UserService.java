@@ -33,4 +33,6 @@ public interface UserService {
 
 	User resetPassword(ResetPasswordForm form);
 
+	void saveUser(User user);
+
 }

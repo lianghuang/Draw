@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -54,6 +55,10 @@ public class RoomService {
     public Room roomBeginGame(String roomId){
         Room room= findRoomById(roomId);
         room.setStage(Room.Stage.Gaming);
+        List<User> users=room.getAddedUserList();
+        for(User user:users){
+            user.setStatus(User.UserStatus.Gaming);
+        }
         roomRepository.save(room);
         return room;
     }
@@ -66,8 +71,6 @@ public class RoomService {
     public Room getRandomRoom(User user){
         String roomId=findRoomIdByUser(user.getUsername());
         if(StringUtils.isNotEmpty(roomId)){
-            //退出用户之前的房间，加入新的房间
-//           roomRepository.removeRoomAndUserConnection(roomId,user.getId());
             removeUser(user,findRoomById(roomId));
         }
         Pageable page=new PageRequest(0,1);
@@ -89,6 +92,10 @@ public class RoomService {
         }
     }
     public Room createRoom(User user){
+        String roomId=findRoomIdByUser(user.getUsername());
+        if(StringUtils.isNotEmpty(roomId)){
+            removeUser(user,findRoomById(roomId));
+        }
         Room room =generateEmptyRoom();
         room.addUser(user);
         room.setType(Room.RoomType.Specified);
@@ -101,8 +108,12 @@ public class RoomService {
         if(room==null){
             return null;
         }
-        if(room.getStage().equals(Room.Stage.Ready)){
-            return null;//准备界面，不允许用户指定房间号进入
+        if(room.getType().equals(Room.RoomType.Random)){
+            return null;//不允许用户指定房间号进入随机房间
+        }
+        String roomIdOrig=findRoomIdByUser(user.getUsername());
+        if(StringUtils.isNotEmpty(roomIdOrig)){
+            removeUser(user,findRoomById(roomIdOrig));
         }
         room.addUser(user);
         roomRepository.save(room);
