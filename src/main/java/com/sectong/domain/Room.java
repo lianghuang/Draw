@@ -13,32 +13,72 @@ import java.util.List;
 @Table(name = "rooms", uniqueConstraints = { @UniqueConstraint(columnNames = { "roomId" }) })
 public class Room {
     public enum Stage{
-        Ready,Start,Gaming
+        /**
+         * 房间初始状态，游戏未开始前的状态
+         */
+        Ready,
+        /**
+         * 自定义房间第二个场景的状态
+         */
+        Start,
+        /**
+         * 代表第二个房间开始游戏的状态
+         */
+        Gaming
     }
     public enum RoomType{
-        Random,Specified
+        /**
+         * 随机房间类型
+         */
+        Random,
+        /**
+         * 自定义房间类型
+         */
+        Specified
     }
+    //最大用户数，未传递给前台
     public static final int maxUserNum=6;
+    //最小游戏开始人数，未传递给前台
+    public static final  int  minGameUserNum=3;
+    //默认等待开始时间,未传递给前台
+    public static final int timeToStart=10;
 
-    public static final  int  minGameUserNum=3;//最小游戏开始人数
-
-    public static final int timeToStart=10;//默认等待开始时间
-
+    /**
+     * 房间ID
+     */
     @Id
     private String roomId;
 
+    /**
+     * 房间类型，见RoomType
+     */
     @Enumerated(EnumType.STRING)
     private RoomType type=RoomType.Random;
 
+    /**
+     * 房间阶段，见Stage
+     */
     @Enumerated(EnumType.STRING)
-    private Stage stage=Stage.Ready; //房间的阶段
+    private Stage stage=Stage.Ready;
 
-    private String roomOwnerName;//房主名字
+    /**
+     * 房主的username
+     */
+    private String roomOwnerName;
 
-    private Integer nowUserNum=0;//房间内目前人数
+    /**
+     * 房间内目前人数
+     */
+    private Integer nowUserNum=0;
 
-    private Integer questionNum=5;//比如一局5个问题？
+    /**
+     * 每一局的问题数量
+     */
+    private Integer questionNum=5;
 
+    /**
+     * 房间内用户列表
+     */
     @OneToMany
     @JoinTable(
             name = "ref_room_user",
@@ -47,7 +87,9 @@ public class Room {
     )
     private List<User> addedUserList;//已加入用户列表
 
-
+    /**
+     * 房间内的问题列表
+     */
     @ManyToMany
     @JoinTable(
             name = "ref_room_question",
@@ -56,10 +98,16 @@ public class Room {
     )
     private List<Question> questions;//问题列表
 
+    /**
+     * 当前正在玩的问题
+     */
     @OneToOne
     @JoinColumn(name="current_question", referencedColumnName="id")
     private Question currentQuestion;
 
+    /**
+     * 数据库乐观锁，请忽略
+     */
     @Version
     private Integer version;
 

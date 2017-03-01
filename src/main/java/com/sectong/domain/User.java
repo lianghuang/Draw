@@ -12,25 +12,63 @@ import javax.persistence.*;
 @Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }) })
 public class User {
 
+    /**
+     * 用户ID
+     */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+    /**
+     * 用户名，要求唯一
+     */
 	private String username;
 
+    /**
+     * 用户昵称
+     */
 	private String nickname;
 
+    /**
+     * 密码，不会返回给前端
+     */
 	private String password;
+
+    /**
+     * 头像，未用到
+     */
 	private String image;
 
+    /**
+     * 见UserStatus
+     */
     @Enumerated(EnumType.STRING)
 	private UserStatus status=UserStatus.Empty;
 
     public enum UserStatus{
-        Empty,Ready,Gaming
+        /**
+         * 用户离线，未加入任何房间
+         */
+        Empty,
+        /**
+         * 用户点击完准备
+         */
+        Ready,
+        /**
+         * 用户开始游戏
+         */
+        Gaming
     }
 
+    /**
+     * 是否启用，0未启用，1启用。未用到
+     */
 	private int enabled;
+
+    /**
+     * 当局游戏的分数
+     */
+	private int currentScore;
 
     public UserStatus getStatus() {
         return status;
@@ -80,7 +118,15 @@ public class User {
 		this.enabled = enabled;
 	}
 
-	@Override
+    public int getCurrentScore() {
+        return currentScore;
+    }
+
+    public void setCurrentScore(int currentScore) {
+        this.currentScore = currentScore;
+    }
+
+    @Override
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", enabled=" + enabled + "]";
 	}

@@ -130,9 +130,20 @@ public class RoomController {
         userService.saveUser(user);
         Room room= roomService.findRoomById(roomId);
         simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/ready", user);
-        if(room.getNowUserNum()>=Room.maxUserNum){
-            //通知房间内倒计时
-            simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/owner.countdown", room.getRoomOwnerName());
+        if(room.getNowUserNum()>=Room.minGameUserNum){
+            boolean notifyFlag=true;
+            for(User roomuser:room.getAddedUserList()){
+                if(room.getRoomOwnerName().equals(roomuser.getUsername())){
+                    continue;
+                }
+                if(!roomuser.getStatus().equals(User.UserStatus.Ready)){
+                    notifyFlag=false;
+                }
+            }
+            if(notifyFlag){
+                //通知房间内倒计时
+                simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/owner.countdown", Room.timeToStart);
+            }
         }
         return Message.successMsg(room);
     }
@@ -150,10 +161,7 @@ public class RoomController {
         userService.saveUser(user);
         Room room= roomService.findRoomById(roomId);
         simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/readycancel", user);
-        if(room.getNowUserNum()<Room.maxUserNum){
-            //通知房间内倒计时取消
-            simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/owner.countdown.cancel", room.getRoomOwnerName());
-        }
+        simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/owner.countdown.cancel",Room.timeToStart);
         return Message.successMsg(room);
     }
 

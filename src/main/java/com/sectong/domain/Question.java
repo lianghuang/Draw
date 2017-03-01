@@ -8,16 +8,43 @@ import javax.persistence.Id;
  */
 @Entity
 public class Question {
+    /**
+     * 问题主键ID
+     */
     @Id
     private String id;
 
+    /**
+     * 分数
+     */
+    private int score;
+    /**
+     * 问题答案
+     */
     private String question;
 
+    /**
+     * 提示信息1
+     */
     private String keyword1;
 
+    /**
+     * 提示信息2
+     */
     private String keyword2;
 
+    /**
+     * 提示信息3
+     */
     private String keyword3;
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
 
     public String getId() {
         return id;

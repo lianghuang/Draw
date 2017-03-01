@@ -1,8 +1,10 @@
 package com.sectong.controller;
 
 import com.sectong.domain.Room;
+import com.sectong.domain.User;
 import com.sectong.repository.PaintHistoryRepository;
 import com.sectong.service.RoomService;
+import com.sectong.service.UserService;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,9 @@ public class DrawController {
     @Autowired
     private RoomService roomService;
 
+    @Autowired
+    private UserService userService;
+
     @MessageMapping("/room.{roomId}/draw/paint")
     public String drawpts(@DestinationVariable("roomId")String roomId,String message) throws Exception {
         logger.debug("message:{}",message);
@@ -45,7 +50,7 @@ public class DrawController {
 
     @MessageMapping("/room.{roomId}/{username}/draw/paint/history")
     public List<String> drawHistory(@DestinationVariable("roomId")String roomId,
-                                    @DestinationVariable("userId")String username) throws Exception {
+                                    @DestinationVariable("username")String username) throws Exception {
         List<String> historys=paintHistoryRepository.getHistory(roomId);
         //消息转发
         simpMessagingTemplate.convertAndSend("/queue/room."+roomId+"/"+username+"/draw/paint/history",historys);
@@ -53,15 +58,27 @@ public class DrawController {
     }
 
 
-    @MessageMapping("/room.{roomId}/draw/answer")
-    public void answer(@DestinationVariable("roomId")String roomId,String answer) throws Exception {
+    @MessageMapping("/room.{roomId}/{username}/draw/answer")
+    public void answer(@DestinationVariable("roomId")String roomId,
+                       @DestinationVariable("username")String username,
+                       String answer) throws Exception {
         Room room=roomService.findRoomById(roomId);
         if(room.getCurrentQuestion().getQuestion().equals(answer)){
             //回答正确
             simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/correct",answer);
+            //给用户计分
+            User user=userService.getUserByUsername(username);
+            user.setCurrentScore(user.getCurrentScore()+room.getCurrentQuestion().getScore());
+            userService.saveUser(user);
+            scorePush(roomId);
         }else{
             //回答错误
             simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/incorrect",answer);
         }
+    }
+
+    private void scorePush(String roomId){
+        Room room=roomService.findRoomById(roomId);
+        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/scores",room);
     }
 }
