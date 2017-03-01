@@ -182,10 +182,7 @@ public class RoomController {
         simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/game.talk",message);
     }
 
-    public void gameEnded(String roomId){
-        paintHistoryRepository.destroyRoomHistry(roomId);
-        roomService.deleteRoom(roomId);
-    }
+
 
     private boolean validateRoomAndUserName(String comeRoomId,String username){
         String roomId=roomService.findRoomIdByUser(username);
