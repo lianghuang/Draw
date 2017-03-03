@@ -173,7 +173,7 @@ public class RoomController {
             return Message.errorMsg("房间和您当前用户校验错误");
         }
         Room room=roomService.roomBeginGame(roomId);
-        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/start.game ",room);
+        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/start.game",room);
         return Message.successMsg(room);
     }
 

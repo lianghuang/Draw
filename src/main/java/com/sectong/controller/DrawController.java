@@ -40,7 +40,7 @@ public class DrawController {
 
     @MessageMapping("/room.{roomId}/draw/paint")
     public String drawpts(@DestinationVariable("roomId")String roomId,String message) throws Exception {
-        logger.debug("message:{}",message);
+        logger.info("收到的message为:{}",message);
         paintHistoryRepository.addHistory(roomId,message);
         //消息转发
         simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/draw/pts",message);
