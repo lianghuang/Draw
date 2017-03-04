@@ -64,6 +64,8 @@ public class DrawController {
                        @DestinationVariable("username")String username,
                        String answer) throws Exception {
         Room room=roomService.findRoomById(roomId);
+        logger.info("answer: roomId:{}, username:{}",roomId,username);
+        logger.info("room answer:{} ,user answer:{}",room.getCurrentQuestion().getQuestion(),answer);
         if(room.getCurrentQuestion().getQuestion().equals(answer)){
             //回答正确
             simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/correct",answer);
