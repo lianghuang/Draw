@@ -40,7 +40,7 @@ public class DrawController {
 
     @MessageMapping("/room.{roomId}/draw/paint")
     public String drawpts(@DestinationVariable("roomId")String roomId,String message) throws Exception {
-        logger.info("收到的message为:{}",message);
+        logger.info("drawpts: roomId:{},收到的message为:{}",roomId,message);
         paintHistoryRepository.addHistory(roomId,message);
         //消息转发
         simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/draw/pts",message);
@@ -51,6 +51,7 @@ public class DrawController {
     @MessageMapping("/room.{roomId}/{username}/draw/paint/history")
     public List<String> drawHistory(@DestinationVariable("roomId")String roomId,
                                     @DestinationVariable("username")String username) throws Exception {
+        logger.info("get drawhistory: username:{},roomId:{}",username,roomId);
         List<String> historys=paintHistoryRepository.getHistory(roomId);
         //消息转发
         simpMessagingTemplate.convertAndSend("/queue/room."+roomId+"/"+username+"/draw/paint/history",historys);

@@ -106,11 +106,13 @@ public class RoomController {
     @GetMapping(value = "room/leave")
     @ApiOperation(value = "", notes = "用户离开房间")
     public  Message leaveRoom(@RequestParam(name = "username") String username) {
+        logger.info("用户离开房间：username:{}",username);
         User user=userService.getUserByUsername(username);
         String roomId=roomService.findRoomIdByUser(username);
         if(StringUtils.isEmpty(roomId)){
             return Message.errorMsg("username:"+username+"的用户未进入任何房间");
         }
+        logger.info("用户离开房间：username:{},roomId:{}",username,roomId);
         Room room= roomService.findRoomById(roomId);
         roomService.removeUser(user,room);
         //房间内的其他玩家收到该用户退出房间的推送消息
