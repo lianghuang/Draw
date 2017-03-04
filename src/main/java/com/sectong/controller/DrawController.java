@@ -13,6 +13,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -59,10 +60,13 @@ public class DrawController {
     }
 
 
+    @Transactional
     @MessageMapping("/room.{roomId}/{username}/draw/answer")
     public void answer(@DestinationVariable("roomId")String roomId,
                        @DestinationVariable("username")String username,
                        String answer) throws Exception {
+        answer=answer.replace("\n","");
+        answer=answer.replace("\r","");
         Room room=roomService.findRoomById(roomId);
         logger.info("answer: roomId:{}, username:{}",roomId,username);
         logger.info("room answer:{} ,user answer:{}",room.getCurrentQuestion().getQuestion(),answer);
@@ -73,7 +77,7 @@ public class DrawController {
             User user=userService.getUserByUsername(username);
             user.setCurrentScore(user.getCurrentScore()+room.getCurrentQuestion().getScore());
             userService.saveUser(user);
-            scorePush(roomId);
+            simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/scores",room);
             //如果为当前房间的最后一个问题，推送游戏结束指令
             if(room.getQuestions().size()>=room.getQuestionNum()){
                 gameEnded(roomId);
@@ -97,10 +101,5 @@ public class DrawController {
         room.setCurrentQuestion(null);
         room.setStage(Room.Stage.Ready);
         roomService.save(room);
-    }
-
-    private void scorePush(String roomId){
-        Room room=roomService.findRoomById(roomId);
-        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/scores",room);
     }
 }
