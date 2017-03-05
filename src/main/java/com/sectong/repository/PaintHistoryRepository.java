@@ -70,8 +70,29 @@ public class PaintHistoryRepository {
         }
     }
 
+    public void clearCurrentQuestion(String roomId){
+        Room room=roomService.findRoomById(roomId);
+        if(room==null||room.getCurrentQuestion()==null){
+            logger.info("未找到：房间号:{}，返回的房间为:{}",roomId, JsonUtils.toString(room));
+            return;
+        }
+        String questionId=room.getCurrentQuestion().getId();
+        if(paintHistory.containsKey(roomId)) {
+            List<PaintHistory> paintHistories = paintHistory.get(roomId);
+            for (PaintHistory his : paintHistories) {
+                if (questionId.equals(his.getQuestionId())) {
+                    List<String> empty =new ArrayList<>();
+                    his.setHistorys(empty);
+                    return;
+                }
+            }
+        }
+    }
+
     public void destroyRoomHistry(String roomId){
-        paintHistory.remove(roomId);
+        if(paintHistory.containsKey(roomId)){
+            paintHistory.remove(roomId);
+        }
     }
 
     public List<String> getHistory(String roomId){

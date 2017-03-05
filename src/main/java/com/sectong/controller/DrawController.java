@@ -1,5 +1,7 @@
 package com.sectong.controller;
 
+import com.sectong.domain.AnswerResp;
+import com.sectong.domain.ClearCommand;
 import com.sectong.domain.Room;
 import com.sectong.domain.User;
 import com.sectong.repository.PaintHistoryRepository;
@@ -59,6 +61,14 @@ public class DrawController {
         return historys;
     }
 
+    @MessageMapping("/room.{roomId}/draw/paint/clear")
+    public void clearPaint(@DestinationVariable("roomId")String roomId) throws Exception {
+        logger.info("clearPaint,roomId:{}",roomId);
+        ClearCommand cmd=new ClearCommand();
+        cmd.setClear("1");
+        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/draw/paint/clear", cmd);
+        paintHistoryRepository.clearCurrentQuestion(roomId);
+    }
 
     @Transactional
     @MessageMapping("/room.{roomId}/{username}/draw/answer")
@@ -70,9 +80,12 @@ public class DrawController {
         Room room=roomService.findRoomById(roomId);
         logger.info("answer: roomId:{}, username:{}",roomId,username);
         logger.info("room answer:{} ,user answer:{}",room.getCurrentQuestion().getQuestion(),answer);
+        AnswerResp resp=new AnswerResp();
+        resp.setUsername(username);
+        resp.setAnswer(answer);
         if(room.getCurrentQuestion().getQuestion().equals(answer)){
             //回答正确
-            simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/correct",answer);
+            simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/correct",resp);
             //给用户计分
             User user=userService.getUserByUsername(username);
             user.setCurrentScore(user.getCurrentScore()+room.getCurrentQuestion().getScore());
@@ -84,7 +97,7 @@ public class DrawController {
             }
         }else{
             //回答错误
-            simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/incorrect",answer);
+            simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/answer/incorrect",resp);
         }
     }
 
