@@ -33,6 +33,7 @@ public class PaintHistoryRepository {
             logger.info("未找到：房间号:{}，返回的房间为:{}",roomId, JsonUtils.toString(room));
             return;
         }
+
         String questionId=room.getCurrentQuestion().getId();
         if(paintHistory.containsKey(roomId)){
             List<PaintHistory> paintHistories= paintHistory.get(roomId);
