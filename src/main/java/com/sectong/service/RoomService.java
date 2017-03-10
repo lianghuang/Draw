@@ -45,6 +45,13 @@ public class RoomService {
         return room;
     }
 
+    public void removeUser(String username){
+        String roomId=findRoomIdByUser(username);
+        if(StringUtils.isNotEmpty(roomId)){
+            removeUser(userRepository.findByUsername(username),findRoomById(roomId));
+        }
+    }
+
     public void deleteRoom(String roomId){
         roomRepository.delete(roomId);
     }
@@ -73,7 +80,8 @@ public class RoomService {
     public Room getRandomRoom(User user){
         String roomId=findRoomIdByUser(user.getUsername());
         if(StringUtils.isNotEmpty(roomId)){
-            removeUser(user,findRoomById(roomId));
+//            removeUser(user,findRoomById(roomId));
+            return findRoomById(roomId);
         }
         Pageable page=new PageRequest(0,1);
         Room room= roomRepository.findMostSuitRoom(Room.maxUserNum);

@@ -1,6 +1,7 @@
 package com.sectong.event;
 
 import com.sectong.constants.WebConstant;
+import com.sectong.service.RoomService;
 import com.sectong.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,21 +27,25 @@ public class PresenceEventListener {
 
     private String logoutDestination;
 
-    public PresenceEventListener(SimpMessagingTemplate messagingTemplate, ParticipantRepository participantRepository) {
+    private RoomService roomService;
+
+    public PresenceEventListener(SimpMessagingTemplate messagingTemplate, ParticipantRepository participantRepository,
+                                 RoomService roomService) {
         this.messagingTemplate = messagingTemplate;
         this.participantRepository = participantRepository;
+        this.roomService=roomService;
     }
 
     @EventListener
     private void handleSessionConnected(SessionConnectEvent event) {
-        logger.info("event:{}", JsonUtils.toString(event));
+//        logger.info("event:{}", JsonUtils.toString(event));
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-        logger.info("===============headers:{}",headers.toString());
+//        logger.info("===============headers:{}",headers.toString());
         if(headers.getHeader(SimpMessageHeaderAccessor.SESSION_ATTRIBUTES)!=null){
             @SuppressWarnings("unchecked")
             Map<String, Object> simpSessionAttributes= (Map<String, Object>)headers.getHeader(SimpMessageHeaderAccessor.SESSION_ATTRIBUTES);
             String username=(String) simpSessionAttributes.get(WebConstant.USERNAME);
-            logger.info("===============username:{}",username);
+            logger.info("===============username:{},connected",username);
             LoginEvent loginEvent = new LoginEvent(username);
             messagingTemplate.convertAndSend(loginDestination, loginEvent);
             // We store the session as we need to be idempotent in the disconnect event processing
@@ -52,8 +57,11 @@ public class PresenceEventListener {
     private void handleSessionDisconnect(SessionDisconnectEvent event) {
         LoginEvent loginEvent=participantRepository.getParticipant(event.getSessionId());
         if(loginEvent!=null){
+            logger.info("===============username:{},disconnected",loginEvent.getUsername());
             messagingTemplate.convertAndSend(logoutDestination, new LogoutEvent(loginEvent.getUsername()));
             participantRepository.removeParticipant(event.getSessionId());
+            //remove user
+            roomService.removeUser(loginEvent.getUsername());
         }
     }
 

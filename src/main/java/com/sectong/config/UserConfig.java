@@ -2,6 +2,7 @@ package com.sectong.config;
 
 import com.sectong.event.ParticipantRepository;
 import com.sectong.event.PresenceEventListener;
+import com.sectong.service.RoomService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
@@ -26,8 +27,8 @@ public class UserConfig {
 
     @Bean
     @Description("Tracks user presence (join / leave) and broacasts it to all connected users")
-    public PresenceEventListener presenceEventListener(SimpMessagingTemplate messagingTemplate) {
-        PresenceEventListener presence = new PresenceEventListener(messagingTemplate, participantRepository());
+    public PresenceEventListener presenceEventListener(RoomService roomService,SimpMessagingTemplate messagingTemplate) {
+        PresenceEventListener presence = new PresenceEventListener(messagingTemplate, participantRepository(),roomService);
         presence.setLoginDestination(Destinations.LOGIN);
         presence.setLogoutDestination(Destinations.LOGOUT);
         return presence;

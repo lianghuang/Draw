@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 
@@ -83,7 +84,10 @@ public class RoomController {
         if(room==null){
             return Message.errorMsg("未找到"+roomId+"的房间");
         }
-        List<Question> quesitons=questionService.getRandomQuesitons(size);
+        List<Question> quesitons=questionService.getRandomQuesitons(roomId,size);
+        if(CollectionUtils.isEmpty(quesitons)){
+            return Message.errorMsg("问题列表都被用光了，没有新的问题了");
+        }
         simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/questions","正在选择");
         return Message.successMsg(quesitons);
     }
