@@ -3,8 +3,9 @@ package com.sectong.controller;
 import com.sectong.domain.Question;
 import com.sectong.domain.Room;
 import com.sectong.domain.User;
+import com.sectong.event.LoginEvent;
+import com.sectong.event.ParticipantRepository;
 import com.sectong.message.Message;
-import com.sectong.repository.PaintHistoryRepository;
 import com.sectong.service.QuestionService;
 import com.sectong.service.RoomService;
 import com.sectong.service.UserService;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by huangliangliang on 2/15/17.
@@ -40,8 +43,28 @@ public class RoomController {
     @Autowired
     private QuestionService questionService;
     @Autowired
-    private PaintHistoryRepository paintHistoryRepository;
+    private ParticipantRepository participantRepository;
 
+    @GetMapping(value = "room/getParticipant")
+    @ApiOperation(value = "", notes = "获取现在缓存中的用户信息")
+    public Message getParticipant(@RequestParam(name = "password") String password) {
+        if("qwe123".equals(password)){
+            return Message.successMsg(participantRepository.getActiveSessions());
+        }else{
+            return Message.errorMsg("未具备权限");
+        }
+    }
+    @GetMapping(value = "room/deleteParticipant")
+    @ApiOperation(value = "", notes = "清除现在缓存中的用户信息")
+    public Message deleteParticipant(@RequestParam(name = "password") String password) {
+        if("qwe123".equals(password)){
+            Map<String, LoginEvent> activeSessions = new ConcurrentHashMap<>();
+            participantRepository.setActiveSessions(activeSessions);
+            return Message.successMsg(participantRepository.getActiveSessions());
+        }else{
+            return Message.errorMsg("未具备权限");
+        }
+    }
     @GetMapping(value = "room/into")
     @ApiOperation(value = "", notes = "用户进入房间")
     public Message getRandomRoom(@RequestParam(name = "username") String username) {

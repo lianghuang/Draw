@@ -16,8 +16,8 @@ import java.util.List;
 @RestResource(exported = false)
 public interface RoomRepository extends CrudRepository<Room, String> {
 
-    @Query(value = "select * from Rooms where now_user_num<?1 and `type`='Random' and `stage`='Ready' order by now_user_num desc limit 0,1", nativeQuery = true)
-    Room findMostSuitRoom(Integer num);
+    @Query(value = "select * from Rooms where now_user_num<?1 and `type`='Random' and `stage`='Ready' order by now_user_num desc limit 0,3", nativeQuery = true)
+    List<Room> findMostSuitRooms(Integer num);
 
     @Query(value = "select room.room_id from Rooms room left join ref_room_user ref on room.room_id=ref.room_id left join users u on u.id=ref.user_id where u.username=?1", nativeQuery = true)
     String findRoomIdByUserName(String userName);

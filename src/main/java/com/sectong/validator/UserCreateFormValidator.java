@@ -35,9 +35,9 @@ public class UserCreateFormValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		LOGGER.debug("Validating {}", target);
-		UserCreateForm form = (UserCreateForm) target;
+		//UserCreateForm form = (UserCreateForm) target;
 		// validatePasswords(errors, form);
-		validateUsername(errors, form);
+		//validateUsername(errors, form);
 	}
 
 	private void validateUsername(Errors errors, UserCreateForm form) {

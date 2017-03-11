@@ -75,13 +75,11 @@ public class UserServiceImpl implements UserService {
 		user.setUsername(form.getUsername());
 		user.setPassword(new BCryptPasswordEncoder(10).encode(form.getPassword()));
 		user.setEnabled(1);
-
+        user.setNickname(NickNames.getNickName());
 		Authority authority = new Authority();
 		authority.setUsername(form.getUsername());
 		authority.setAuthority("ROLE_USER");
 		authorityRepository.save(authority);
-
-		// System.out.println(form);
 		return userRepository.save(user);
 	}
 

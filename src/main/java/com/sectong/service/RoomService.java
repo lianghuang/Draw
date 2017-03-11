@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Random;
@@ -35,6 +36,7 @@ public class RoomService {
     }
 
 
+    @Transactional
     public Room removeUser(User user,Room room){
         room.removeUser(user);
         if(room.getNowUserNum()<=0){
@@ -45,6 +47,7 @@ public class RoomService {
         return room;
     }
 
+    @Transactional
     public void removeUser(String username){
         String roomId=findRoomIdByUser(username);
         if(StringUtils.isNotEmpty(roomId)){
@@ -80,17 +83,19 @@ public class RoomService {
     public Room getRandomRoom(User user){
         String roomId=findRoomIdByUser(user.getUsername());
         if(StringUtils.isNotEmpty(roomId)){
-//            removeUser(user,findRoomById(roomId));
-            return findRoomById(roomId);
+            removeUser(user,findRoomById(roomId));
+            //return findRoomById(roomId);
         }
         Pageable page=new PageRequest(0,1);
-        Room room= roomRepository.findMostSuitRoom(Room.maxUserNum);
-        if(room==null){
+        List<Room> rooms= roomRepository.findMostSuitRooms(Room.maxUserNum);
+        if(CollectionUtils.isEmpty(rooms)){
             Room room1 =generateEmptyRoom();
             room1.addUser(user);
             roomRepository.save(room1);
             return room1;
         }else{
+            Random random =new Random();
+            Room room=rooms.get(random.nextInt(rooms.size()));
             room.addUser(user);
             try{
                 roomRepository.save(room);

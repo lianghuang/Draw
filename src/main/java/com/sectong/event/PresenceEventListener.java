@@ -38,9 +38,9 @@ public class PresenceEventListener {
 
     @EventListener
     private void handleSessionConnected(SessionConnectEvent event) {
-//        logger.info("event:{}", JsonUtils.toString(event));
+///        logger.info("event:{}", JsonUtils.toString(event));
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-//        logger.info("===============headers:{}",headers.toString());
+        logger.info("===============headers:{}",headers.toString());
         if(headers.getHeader(SimpMessageHeaderAccessor.SESSION_ATTRIBUTES)!=null){
             @SuppressWarnings("unchecked")
             Map<String, Object> simpSessionAttributes= (Map<String, Object>)headers.getHeader(SimpMessageHeaderAccessor.SESSION_ATTRIBUTES);
