@@ -1,5 +1,7 @@
 package com.sectong.event;
 
+import org.thymeleaf.util.StringUtils;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,6 +15,19 @@ public class ParticipantRepository {
 
 	public void add(String sessionId, LoginEvent event) {
 		activeSessions.put(sessionId, event);
+	}
+
+	public void removePreviousSession(String username){
+		String key=null;
+		for(Map.Entry<String,LoginEvent> session:activeSessions.entrySet()){
+			if(session.getValue().getUsername().equals(username)){
+				key=session.getKey();
+				break;
+			}
+		}
+		if(!StringUtils.isEmpty(key)){
+			activeSessions.remove(key);
+		}
 	}
 
 	public LoginEvent getParticipant(String sessionId) {

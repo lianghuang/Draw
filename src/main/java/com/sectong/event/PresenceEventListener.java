@@ -27,29 +27,31 @@ public class PresenceEventListener {
 
     private String logoutDestination;
 
-    private RoomService roomService;
+//    private RoomService roomService;
 
-    public PresenceEventListener(SimpMessagingTemplate messagingTemplate, ParticipantRepository participantRepository,
-                                 RoomService roomService) {
+    public PresenceEventListener(SimpMessagingTemplate messagingTemplate, ParticipantRepository participantRepository
+                                 ) {
         this.messagingTemplate = messagingTemplate;
         this.participantRepository = participantRepository;
-        this.roomService=roomService;
+//        this.roomService=roomService;
     }
 
     @EventListener
     private void handleSessionConnected(SessionConnectEvent event) {
 ///        logger.info("event:{}", JsonUtils.toString(event));
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-        logger.info("===============headers:{}",headers.toString());
+//        logger.info("===============headers:{}",headers.toString());
         if(headers.getHeader(SimpMessageHeaderAccessor.SESSION_ATTRIBUTES)!=null){
             @SuppressWarnings("unchecked")
             Map<String, Object> simpSessionAttributes= (Map<String, Object>)headers.getHeader(SimpMessageHeaderAccessor.SESSION_ATTRIBUTES);
             String username=(String) simpSessionAttributes.get(WebConstant.USERNAME);
             logger.info("===============username:{},connected",username);
             LoginEvent loginEvent = new LoginEvent(username);
-            messagingTemplate.convertAndSend(loginDestination, loginEvent);
+//            messagingTemplate.convertAndSend(loginDestination, loginEvent);
             // We store the session as we need to be idempotent in the disconnect event processing
+            participantRepository.removePreviousSession(username);
             participantRepository.add(headers.getSessionId(), loginEvent);
+
         }
     }
 
@@ -58,10 +60,10 @@ public class PresenceEventListener {
         LoginEvent loginEvent=participantRepository.getParticipant(event.getSessionId());
         if(loginEvent!=null){
             logger.info("===============username:{},disconnected",loginEvent.getUsername());
-            messagingTemplate.convertAndSend(logoutDestination, new LogoutEvent(loginEvent.getUsername()));
-            participantRepository.removeParticipant(event.getSessionId());
-            //remove user
-            roomService.removeUser(loginEvent.getUsername());
+//          messagingTemplate.convertAndSend(logoutDestination, new LogoutEvent(loginEvent.getUsername()));
+            loginEvent.logout();
+//            participantRepository.removeParticipant(event.getSessionId());
+//            roomService.removeUser(loginEvent.getUsername());
         }
     }
 

@@ -27,8 +27,8 @@ public class UserConfig {
 
     @Bean
     @Description("Tracks user presence (join / leave) and broacasts it to all connected users")
-    public PresenceEventListener presenceEventListener(RoomService roomService,SimpMessagingTemplate messagingTemplate) {
-        PresenceEventListener presence = new PresenceEventListener(messagingTemplate, participantRepository(),roomService);
+    public PresenceEventListener presenceEventListener(SimpMessagingTemplate messagingTemplate) {
+        PresenceEventListener presence = new PresenceEventListener(messagingTemplate, participantRepository());
         presence.setLoginDestination(Destinations.LOGIN);
         presence.setLogoutDestination(Destinations.LOGOUT);
         return presence;

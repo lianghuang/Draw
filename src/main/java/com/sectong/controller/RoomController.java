@@ -74,6 +74,7 @@ public class RoomController {
         }
         Room room= roomService.getRandomRoom(user);
         //房间内的其他玩家收到该用户进入房间的推送消息
+        logger.info("用户：{}，进入了随机房间：{}", username,room.getRoomId());
         simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/in", user);
         return Message.successMsg(room);
     }
@@ -133,17 +134,17 @@ public class RoomController {
     @GetMapping(value = "room/leave")
     @ApiOperation(value = "", notes = "用户离开房间")
     public  Message leaveRoom(@RequestParam(name = "username") String username) {
-        logger.info("用户离开房间：username:{}",username);
+        logger.info("收到用户离开房间请求：username:{}",username);
         User user=userService.getUserByUsername(username);
         String roomId=roomService.findRoomIdByUser(username);
         if(StringUtils.isEmpty(roomId)){
             return Message.errorMsg("username:"+username+"的用户未进入任何房间");
         }
-        logger.info("用户离开房间：username:{},roomId:{}",username,roomId);
+//        logger.info("用户离开房间：username:{},roomId:{}",username,roomId);
         Room room= roomService.findRoomById(roomId);
         roomService.removeUser(user,room);
         //房间内的其他玩家收到该用户退出房间的推送消息
-        simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/out", user);
+//        simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/out", user);
         return Message.successMsg(true);
     }
     @GetMapping(value = "room/{roomId}/ready")

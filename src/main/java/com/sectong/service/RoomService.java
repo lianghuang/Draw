@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -29,7 +30,8 @@ public class RoomService {
     private UserRepository userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(RoomService.class);
-
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     public void save(Room room){
         roomRepository.save(room);
@@ -38,12 +40,18 @@ public class RoomService {
 
     @Transactional
     public Room removeUser(User user,Room room){
+        logger.info("用户:{}退出房间{}",user.getUsername(),room.getRoomId());
         room.removeUser(user);
         if(room.getNowUserNum()<=0){
             roomRepository.delete(room);
         }else{
             roomRepository.save(room);
+            simpMessagingTemplate.convertAndSend("/topic/room."+room.getRoomId()+"/out", user);
+            logger.info("用户:{}退出房间{}，发送广播完成",user.getUsername(),room.getRoomId());
         }
+        user.setStatus(User.UserStatus.Empty);
+        user.setCurrentScore(0);
+        userRepository.save(user);
         return room;
     }
 
