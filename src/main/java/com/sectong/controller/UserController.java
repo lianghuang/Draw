@@ -121,6 +121,10 @@ public class UserController {
 			message.setMsg(0, "用户创建失败");
 			return new ResponseEntity<Message>(message, HttpStatus.OK);
 		}
+		if(userService.getUserByUsername(form.getUsername())!=null){
+			 message.setMsg(1, "用户创建成功");
+			 return new ResponseEntity<Message>(message, HttpStatus.OK);
+		}
 		try {
 			userService.create(form);
 		} catch (DataIntegrityViolationException e) {
