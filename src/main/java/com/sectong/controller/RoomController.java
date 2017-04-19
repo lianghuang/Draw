@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -207,9 +208,13 @@ public class RoomController {
         return Message.successMsg(room);
     }
 
-    @MessageMapping("/room.{roomId}/talk")
-    public void gameTalk(@DestinationVariable("roomId")String roomId,String message) throws Exception{
-        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/game.talk",message);
+    @MessageMapping("/room.{roomId}/{username}/talk")
+    public void gameTalk(@DestinationVariable("roomId")String roomId,@DestinationVariable("username")String username,String message) throws Exception{
+        User user=userService.getUserByUsername(username);
+        Map<String,Object> params=new HashMap<>();
+        params.put("nickname",user.getNickname());
+        params.put("message",message);
+        simpMessagingTemplate.convertAndSend("/topic/room."+roomId+"/game.talk",params);
     }
 
 

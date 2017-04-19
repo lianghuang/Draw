@@ -103,7 +103,7 @@ public class User {
 	}
 
 	public String getImage() {
-		return "http://localhost:8080/" + image;
+		return image;
 	}
 
 	public void setImage(String image) {

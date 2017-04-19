@@ -16,8 +16,28 @@ public class UserCreateForm {
 	@NotEmpty
 	private String password;
 
+	private String nickname;
+
+	private String image;
+
 //	@NotEmpty
 	private String vcode;
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
 
 	public String getUsername() {
 		return username;

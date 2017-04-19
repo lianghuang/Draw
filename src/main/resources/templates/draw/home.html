@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>大厅</title>
+    <script>!function (a, b) {
+        function c() {
+            var b = f.getBoundingClientRect().width;
+            b / i > 540 && (b = 540 * i);
+            var c = b / 10;
+            f.style.fontSize = c + "px", k.rem = a.rem = c
+        }
+
+        var d, e = a.document, f = e.documentElement, g = e.querySelector('meta[name="viewport"]'), h = e.querySelector('meta[name="flexible"]'), i = 0, j = 0, k = b.flexible || (b.flexible = {});
+        if (g) {
+            console.warn("将根据已有的meta标签来设置缩放比例");
+            var l = g.getAttribute("content").match(/initial\-scale=([\d\.]+)/);
+            l && (j = parseFloat(l[1]), i = parseInt(1 / j))
+        } else if (h) {
+            var m = h.getAttribute("content");
+            if (m) {
+                var n = m.match(/initial\-dpr=([\d\.]+)/), o = m.match(/maximum\-dpr=([\d\.]+)/);
+                n && (i = parseFloat(n[1]), j = parseFloat((1 / i).toFixed(2))), o && (i = parseFloat(o[1]), j = parseFloat((1 / i).toFixed(2)))
+            }
+        }
+        if (!i && !j) {
+            var p = a.navigator.userAgent, q = (!!p.match(/android/gi), !!p.match(/iphone/gi)), r = q && !!p.match(/OS 9_3/), s = a.devicePixelRatio;
+            i = q && !r ? s >= 3 && (!i || i >= 3) ? 3 : s >= 2 && (!i || i >= 2) ? 2 : 1 : 1, j = 1 / i
+        }
+        if (f.setAttribute("data-dpr", i), !g)if (g = e.createElement("meta"), g.setAttribute("name", "viewport"), g.setAttribute("content", "initial-scale=" + j + ", maximum-scale=" + j + ", minimum-scale=" + j + ", user-scalable=no"), f.firstElementChild) f.firstElementChild.appendChild(g); else {
+            var t = e.createElement("div");
+            t.appendChild(g), e.write(t.innerHTML)
+        }
+        a.addEventListener("resize", function () {
+            clearTimeout(d), d = setTimeout(c, 300)
+        }, !1), a.addEventListener("pageshow", function (a) {
+            a.persisted && (clearTimeout(d), d = setTimeout(c, 300))
+        }, !1), "complete" === e.readyState ? e.body.style.fontSize = 12 * i + "px" : e.addEventListener("DOMContentLoaded", function () {
+                e.body.style.fontSize = 12 * i + "px"
+            }, !1), c(), k.dpr = a.dpr = i, k.refreshRem = c, k.rem2px = function (a) {
+            var b = parseFloat(a) * this.rem;
+            return "string" == typeof a && a.match(/rem$/) && (b += "px"), b
+        }, k.px2rem = function (a) {
+            var b = parseFloat(a) / this.rem;
+            return "string" == typeof a && a.match(/px$/) && (b += "rem"), b
+        }
+    }(window, window.lib || (window.lib = {}));</script>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="full-screen" content="yes">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="x5-orientation" content="portrait"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="white">
+    <link rel="stylesheet" href="/assets/css/draw/home.css">
+</head>
+<body>
+<div id="home">
+    <div class="header"></div>
+    <div class="container">
+        <div class="user-list">
+            <div class="user-state-con">
+                <div class="user-info">
+                    <div class="avatar-con">
+                        <div class="home-owner">房主</div>
+                        <div class="user-avatar">
+                            <img src="images/avatar.png" alt="">
+                        </div>
+                        <div class="ready-con">准备</div>
+                    </div>
+                    <p class="username">钱老师</p>
+                </div>
+            </div>
+        </div>
+        <div class="time-con">
+            <p class="time hide">10s</p>
+            <p class="ready-sign">当准备人数超过三人后可以开始</p>
+        </div>
+        <div>
+            <div class="ready-button">准备</div>
+            <div class="start-button hide">开始</div>
+        </div>
+    </div>
+    <div class="buttons-con">
+        <div class="button-sign">
+            <span>邀请好友对战吧</span>
+            <span class="triangle"></span>
+        </div>
+        <div class="button create-room-button">
+            <span>创建房间</span>
+        </div>
+        <div class="button enter-room-button">进入房间</div>
+    </div>
+    <div class="confirm-con">
+        <div class="mask"></div>
+        <div class="confirm">
+            <p class="title">确定退出游戏？</p>
+            <div class="buttons">
+                <div class="button cancel">取消</div>
+                <div class="button ensure">确定</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+<script src="/assets/js/draw/socket.js"></script>
+</html>

@@ -29,6 +29,7 @@ import com.sectong.domain.User;
 import com.sectong.domain.UserCreateForm;
 import com.sectong.repository.AuthorityRepository;
 import com.sectong.repository.UserRepository;
+import org.thymeleaf.util.StringUtils;
 
 /**
  * 用户服务接口实现
@@ -75,7 +76,12 @@ public class UserServiceImpl implements UserService {
 		user.setUsername(form.getUsername());
 		user.setPassword(new BCryptPasswordEncoder(10).encode(form.getPassword()));
 		user.setEnabled(1);
-        user.setNickname(NickNames.getNickName());
+		if(StringUtils.isEmpty(form.getNickname())){
+			user.setNickname(NickNames.getNickName());
+		}else{
+			user.setNickname(form.getNickname());
+		}
+		user.setImage(form.getImage());
 		Authority authority = new Authority();
 		authority.setUsername(form.getUsername());
 		authority.setAuthority("ROLE_USER");
