@@ -9,6 +9,8 @@ import com.sectong.domain.ResetPasswordForm;
 import com.sectong.domain.User;
 import com.sectong.domain.UserCreateForm;
 
+import java.util.Collection;
+
 /**
  * 用户服务网接口定义
  * 
@@ -32,6 +34,8 @@ public interface UserService {
 	Object getUserList(int current, int rowCount, String searchPhrase);
 
 	User resetPassword(ResetPasswordForm form);
+
+	Collection<User> findAll();
 
 	void saveUser(User user);
 

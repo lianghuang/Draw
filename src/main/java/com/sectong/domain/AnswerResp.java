@@ -5,16 +5,16 @@ package com.sectong.domain;
  */
 public class AnswerResp {
 
-    private  String username;
+    private  String nickname;
 
     private String answer;
 
-    public String getUsername() {
-        return username;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getAnswer() {

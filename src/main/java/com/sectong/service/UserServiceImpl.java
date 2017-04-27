@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +48,10 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private Environment env;
 
+
+
+
+
 	/**
 	 * 装载userRepository
 	 * 
@@ -58,6 +63,10 @@ public class UserServiceImpl implements UserService {
 		this.authorityRepository = authorityRepository;
 	}
 
+	@Override
+	public Collection<User> findAll(){
+      return userRepository.findAll();
+	}
 	/**
 	 * 查找用户名
 	 */

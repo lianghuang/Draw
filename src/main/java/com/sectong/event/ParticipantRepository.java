@@ -30,6 +30,15 @@ public class ParticipantRepository {
 		}
 	}
 
+	public boolean containsUser(String username){
+		for(Map.Entry<String,LoginEvent> session:activeSessions.entrySet()){
+			if(session.getValue().getUsername().equals(username)){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public LoginEvent getParticipant(String sessionId) {
 		return activeSessions.get(sessionId);
 	}

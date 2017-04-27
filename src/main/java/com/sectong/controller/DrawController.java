@@ -81,7 +81,7 @@ public class DrawController {
         logger.info("answer: roomId:{}, username:{}",roomId,username);
         logger.info("room answer:{} ,user answer:{}",room.getCurrentQuestion().getQuestion(),answer);
         AnswerResp resp=new AnswerResp();
-        resp.setUsername(username);
+        resp.setNickname(userService.getUserByUsername(username).getNickname());
         resp.setAnswer(answer);
         if(room.getCurrentQuestion().getQuestion().equals(answer)){
             //回答正确

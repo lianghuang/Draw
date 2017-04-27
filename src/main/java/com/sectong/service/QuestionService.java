@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by huangliangliang on 2/19/17.
@@ -21,6 +22,7 @@ public class QuestionService {
     @Autowired
     private RoomRepository roomRepository;
 
+    private int score=3;
     public List<Question> getRandomQuesitons(String roomId,int num){
         Room room=roomRepository.findOne(roomId);
         List<Question> quesitons= Lists.newArrayList(questionRepository.findAll());
@@ -36,5 +38,19 @@ public class QuestionService {
 
     public Question getQuestionById(String questionId){
         return questionRepository.findOne(questionId);
+    }
+
+    public boolean addQuestion(String name,String key1,String key2){
+        if(questionRepository.findQuestionByNameAndKey1Key2(name,key1,key2)!=null){
+            return false;
+        }
+        Question question=new Question();
+        question.setId(UUID.randomUUID().toString().replaceAll("-",""));
+        question.setQuestion(name);
+        question.setKeyword1(key1);
+        question.setKeyword2(key2);
+        question.setScore(score);
+        questionRepository.save(question);
+        return true;
     }
 }

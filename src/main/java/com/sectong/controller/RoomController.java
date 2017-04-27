@@ -46,6 +46,17 @@ public class RoomController {
     @Autowired
     private ParticipantRepository participantRepository;
 
+    @GetMapping(value = "question/add")
+    @ApiOperation(value = "", notes = "添加问题")
+    public Message addQuestion(@RequestParam(name = "name") String name,
+                               @RequestParam(name = "key1") String key1,
+                               @RequestParam(name = "key2") String key2) {
+      if(questionService.addQuestion(name,key1,key2)){
+          return Message.successMsg("添加成功");
+      }else{
+          return Message.errorMsg("系统已存在该词语");
+      }
+    }
     @GetMapping(value = "room/getParticipant")
     @ApiOperation(value = "", notes = "获取现在缓存中的用户信息")
     public Message getParticipant(@RequestParam(name = "password") String password) {
